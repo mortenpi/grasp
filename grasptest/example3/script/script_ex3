@@ -24,7 +24,7 @@ cp 2s22p3_2p5_3.w 2s22p3_2p5_3.bw
 cp 2s22p3_2p5_3.cm 2s22p3_2p5_3.cbm
 rtransition < rtransition_input
 # PRODUCE ENERGY TABLE
-rlevels 2s22p3_2p5_3.cm > energy3 
+rlevels 2s22p3_2p5_3.cm > energy3
 rtablevels < rtablevels_input
 pdflatex energytablelatex.tex
 # PRODUCE TRANSITION TABLE

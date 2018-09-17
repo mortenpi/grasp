@@ -9,7 +9,7 @@ set -x
 
 # 2.   Generate lists of CSFs in main directory
 
-        ./sh_files_c 
+        ./sh_files_c
 
 # 3.   Perform MCDHF calculations for the even reference states
 
@@ -19,7 +19,7 @@ set -x
 
        ./sh_DF_odd
 
-# 5.   Perform MCDHF calculations for even states 
+# 5.   Perform MCDHF calculations for even states
 
        ./sh_even
 
@@ -27,7 +27,7 @@ set -x
 
        ./sh_odd
 
-# 7.   Perform RCI, transition and hfs calculations 
+# 7.   Perform RCI, transition and hfs calculations
 
        ./sh_even_odd
 
@@ -35,6 +35,6 @@ set -x
 
        ./sh_rlevels
 
-# 9.   Collect all data files to the main directory        
+# 9.   Collect all data files to the main directory
 
        ./sh_collect

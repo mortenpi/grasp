@@ -15,7 +15,7 @@ set -x
 
 # 4.   Perform scf calculations and a final rci calculation that
 #      includes the Breit correction and QED. All calculations
-#      are transformed to LSJ-coupling. Files are created that 
+#      are transformed to LSJ-coupling. Files are created that
 #      support creation of energy tables
         ./sh_scf
 

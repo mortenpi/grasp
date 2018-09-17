@@ -6,7 +6,7 @@ do
    (if test $z -lt 7
     then
 cd Z${z}
-cp ../odd${n}.c rcsf.inp 
+cp ../odd${n}.c rcsf.inp
 #  Get angular data
 mpirun -np 8 rangular_mpi <<S4
 y
@@ -39,7 +39,7 @@ cd ..
     else
 
 cd Z${z}
-cp ../odd${n}.c rcsf.inp 
+cp ../odd${n}.c rcsf.inp
 #Move mcp files from previous directory: NOT NEEDED SINCE mcp IS IN TMP DIRECTORY
 #m=`expr $z - 1`
 #mv ../Z${m}/mcp* .
