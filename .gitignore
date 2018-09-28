@@ -4,3 +4,4 @@ bin/
 # CMake out-of-tree build directories
 build/
 build-*/
+CMakeLists.user

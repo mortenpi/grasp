@@ -161,3 +161,12 @@ if(MPI_Fortran_FOUND)
 else()
     message("MPI libraries not found. Not building MPI-dependent programs.")
 endif(MPI_Fortran_FOUND)
+
+# We use the CMakeLists.txt so that the user could easily add additional targets
+# to the GRASP build, such as additional (external) GRASP programs that need to
+# be linked agains the GRASP libraries.
+unset(GRASP_CMakeLists_user CACHE)
+find_file(GRASP_CMakeLists_user "CMakeLists.user" ${PROJECT_SOURCE_DIR})
+if(NOT "${GRASP_CMakeLists_user}" STREQUAL "GRASP_CMakeLists_user-NOTFOUND")
+    include(${GRASP_CMakeLists_user})
+endif()

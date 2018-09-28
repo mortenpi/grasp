@@ -12,18 +12,23 @@ for arg in $@; do
 	fi
 done
 
-# We run the default setup for CMake's out-of-tree builds
-#
-#     mkdir build/
-#     cd build/
-#     cmake ..
-#
 build_abspath="${GRASP}/${build_directory}"
 echo "Creating: ${build_abspath}"
 if [ -e "${build_abspath}" ]; then
 	>&2 echo "ERROR: Build directory already exists."
 	exit 1
 fi
+
+# We create an empty CMakeLists.user file, so that the user would not have to
+# re-create it later.
+touch "${GRASP}/CMakeLists.user"
+
+# We run the default setup for CMake's out-of-tree builds
+#
+#     mkdir build/
+#     cd build/
+#     cmake ..
+#
 mkdir "${build_abspath}" && cd "${build_abspath}" \
 	&& cmake ${cmake_args} "${GRASP}"
 
