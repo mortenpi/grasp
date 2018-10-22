@@ -14,6 +14,7 @@ cmake_minimum_required(VERSION 2.6)
 project(grasp)
 
 enable_language(Fortran)
+enable_testing()
 
 # "Release" will be the default build type, which gives us optimization flags etc.
 # The other relevant option would be "Debug", which disables optimizations and
@@ -165,6 +166,10 @@ endif(MPI_Fortran_FOUND)
 # We use the CMakeLists.txt so that the user could easily add additional targets
 # to the GRASP build, such as additional (external) GRASP programs that need to
 # be linked agains the GRASP libraries.
+#
+# We also set the GRASP variable that the user-defined targets can use to figure
+# out where the root of the GRASP source tree is.
+set(GRASP ${PROJECT_SOURCE_DIR})
 unset(GRASP_CMakeLists_user CACHE)
 find_file(GRASP_CMakeLists_user "CMakeLists.user" ${PROJECT_SOURCE_DIR})
 if(NOT "${GRASP_CMakeLists_user}" STREQUAL "GRASP_CMakeLists_user-NOTFOUND")
