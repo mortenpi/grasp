@@ -35,8 +35,6 @@ add_executable(rmcdhf_mpi
     getoldmpi_I.f90
     getoldwt.f90
     getoldwt_I.f90
-    #getscd.f90
-    #getscd_I.f90
     getscdmpi.f90
     getscdmpi_I.f90
     hmoutmpi.f90
