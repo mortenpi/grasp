@@ -74,8 +74,8 @@ add_executable(rci_mpi
     lodmixmpi_I.f90
     lodres.f90
     lodres_I.f90
-    maneig.f90
-    maneig_I.f90
+    maneigmpi.f90
+    maneigmpi_I.f90
     matrix.f90
     matrix_I.f90
     mohr.f90
