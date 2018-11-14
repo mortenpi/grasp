@@ -87,7 +87,7 @@
       REAL(DOUBLE), DIMENSION(NNNW) :: tshell
       REAL(DOUBLE) :: tgrl1, tgrl2, tegral
 
-      REAL(DOUBLE) :: accu_dp, accu_c, accu_b
+      REAL(DOUBLE) :: accu_dp, accu_c, accu_b, accu_vp, accu_nms, accu_sms
 
       INTEGER, PARAMETER :: KEY = KEYORB
 !
@@ -224,6 +224,8 @@
 !   angular integral counter
 !
          accu_dp = 0.0d0
+         accu_vp = 0.0d0
+         accu_nms = 0.0d0
          IF (IA .NE. 0) THEN
             IF (IA .EQ. IB) THEN
                DO IA = 1,NW
@@ -239,11 +241,13 @@
                         CALL KEINT (IIA,IIA,TEGRAL)
                         !------------------------
                         ELEMNT = ELEMNT + TEGRAL*ATWINV*TCOEFF
+                        accu_nms = accu_nms + TEGRAL*ATWINV*TCOEFF
                      ENDIF
                      IF (LVP) THEN
                         CALL VPINT (IIA, IIA, TEGRAL)
                         !------------------------
                         ELEMNT = ELEMNT + TEGRAL*TCOEFF
+                        accu_vp = accu_vp + TEGRAL*TCOEFF
                      ENDIF
                   ENDIF
                ENDDO
@@ -260,16 +264,20 @@
                      CALL KEINT (IA, IB, TEGRAL)
                         !------------------------
                      ELEMNT = ELEMNT + TEGRAL*ATWINV*TCOEFF
+                     accu_nms = accu_nms + TEGRAL*ATWINV*TCOEFF
                   ENDIF
                   IF (LVP) THEN
                      CALL VPINT (IA, IB, TEGRAL)
                         !------------------------
                      ELEMNT = ELEMNT + TEGRAL*TCOEFF
+                     accu_vp = accu_vp + TEGRAL*TCOEFF
                   ENDIF
                ENDIF
             ENDIF
          ENDIF
          write(fh_hmat, '("= diracpot ", d30.16)') accu_dp
+         write(fh_hmat, '("= vp       ", d30.16)') accu_vp
+         write(fh_hmat, '("= nms      ", d30.16)') accu_nms
 !
          IBUG1 = 0
 !
@@ -283,6 +291,7 @@
          CALL RKCO_GG (IC, IR, CORD, INCOR, 1)
 !
          accu_c = 0.0d0
+         accu_sms = 0.0d0
          DO 7 I = 1, NVCOEF
             VCOEFF = COEFF(I)
             IF (ABS (VCOEFF) .GT. CUTOFF) THEN
@@ -292,6 +301,7 @@
                      CALL VINT (LABEL(1,I), LABEL(3,I), TGRL1)
                      CALL VINT (LABEL(2,I), LABEL(4,I), TGRL2)
                      ELEMNT = ELEMNT - TGRL1*TGRL2*ATWINV*VCOEFF
+                     accu_sms = accu_sms - TGRL1*TGRL2*ATWINV*VCOEFF
                   ENDIF
                ENDIF
                CALL RKINTC (LABEL(1,I), LABEL(2,I),                     &
@@ -304,6 +314,7 @@
             ENDIF
     7    CONTINUE
          write(fh_hmat, '("= coulomb ", d30.16)') accu_c
+         write(fh_hmat, '("= sms      ", d30.16)') accu_sms
 !
          IBUG1 = 0
 
