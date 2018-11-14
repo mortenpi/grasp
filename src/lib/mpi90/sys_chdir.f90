@@ -16,13 +16,17 @@
 !-----------------------------------------------
       implicit none
       character(len=*), intent(in):: dir
+      character(len=1024) :: path
       integer, intent(in):: lendir
       integer, intent(out):: ierr
-
-
       integer chdir
 
+      call getcwd(path)
+      print '(a,a)', "CHDIR from: ", trim(path)
+
+      print '(a,a)', "CHDIR to: ", dir
       ierr = chdir (dir(1:lendir))
+      print '(a,i0)', "sys_chdir.ierr: ", ierr
 
       return
       end subroutine sys_chdir

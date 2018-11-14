@@ -64,6 +64,7 @@
       USE engout_I
       USE wghtd5_I
       USE qed_I
+      use writecimatrix
       IMPLICIT NONE
 !-----------------------------------------------
 !   D u m m y   A r g u m e n t s
@@ -93,6 +94,7 @@
 !***************************************************************
       ncminpas = 0
 
+      open(file="hmatrix.txt", newunit=fh_hmat, status='replace')
       DO 100 jblock = 1, nblock
          ncf    =   ncfblk(jblock)
          nvec   =   nevblk(jblock)
@@ -285,6 +287,7 @@
          CALL dalloc (UCF, 'UCF', 'MATRIX')
 
   100 CONTINUE
+      close(fh_hmat)
 !
 !   Close the restart files; nothing will be added to them now
 !

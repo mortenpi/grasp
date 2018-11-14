@@ -69,6 +69,7 @@
       USE rkintc_I
       USE vint_I
       USE vpint_I
+      use writecimatrix
       IMPLICIT NONE
       EXTERNAL BREID,CORD
 !----------------------------------------------
@@ -85,6 +86,8 @@
 
       REAL(DOUBLE), DIMENSION(NNNW) :: tshell
       REAL(DOUBLE) :: tgrl1, tgrl2, tegral
+
+      REAL(DOUBLE) :: accu_dp, accu_c, accu_b
 
       INTEGER, PARAMETER :: KEY = KEYORB
 !
@@ -158,7 +161,8 @@
       ENDIF
 
 ! Loop over rows of the Hamiltonian matrix - distributed
-
+      write(fh_hmat, '("jblock:", i3)') jblock
+      write(fh_hmat, '("> ELSTO", d30.16)') elsto
       DO 10 ic = icstrt, ncf, nprocs
 
          NELC = 0    ! counter - Number of non-zeros of this row
@@ -167,6 +171,7 @@
 
          irstart = 1
          DO 85 IR = irstart, IC
+             write(fh_hmat, '("> IC, IR", 2i5)') IC, IR
 
 ! PER
             IF (LFORDR .AND. (IR .GT. ICCUT(1))) THEN
@@ -218,6 +223,7 @@
 !   kinetic energy, electron-nucleus interaction; update the
 !   angular integral counter
 !
+         accu_dp = 0.0d0
          IF (IA .NE. 0) THEN
             IF (IA .EQ. IB) THEN
                DO IA = 1,NW
@@ -228,6 +234,7 @@
                      CALL IABINT (IIA, IIA, TEGRAL)
                         !------------------------
                      ELEMNT = ELEMNT + TEGRAL*TCOEFF
+                     accu_dp = accu_dp + TEGRAL*TCOEFF
                      IF (LNMS) THEN
                         CALL KEINT (IIA,IIA,TEGRAL)
                         !------------------------
@@ -247,6 +254,8 @@
                   CALL IABINT (IA, IB, TEGRAL)
                         !------------------------
                   ELEMNT = ELEMNT + TEGRAL*TCOEFF
+                  accu_dp = accu_dp + TEGRAL*TCOEFF
+                  !write(fh_hmat, '("- diracpot ", d30.16)') TEGRAL*TCOEFF
                   IF (LNMS) THEN
                      CALL KEINT (IA, IB, TEGRAL)
                         !------------------------
@@ -260,6 +269,7 @@
                ENDIF
             ENDIF
          ENDIF
+         write(fh_hmat, '("= diracpot ", d30.16)') accu_dp
 !
          IBUG1 = 0
 !
@@ -272,6 +282,7 @@
 !
          CALL RKCO_GG (IC, IR, CORD, INCOR, 1)
 !
+         accu_c = 0.0d0
          DO 7 I = 1, NVCOEF
             VCOEFF = COEFF(I)
             IF (ABS (VCOEFF) .GT. CUTOFF) THEN
@@ -287,8 +298,12 @@
                             LABEL(3,I), LABEL(4,I),                     &
                             LABEL(5,I), TEGRAL)
                ELEMNT = ELEMNT + TEGRAL*VCOEFF
+               accu_c = accu_c + TEGRAL*VCOEFF
+               !write(fh_hmat, '("- C:", i3, 2d30.16)') I, TEGRAL, VCOEFF
+               !write(fh_hmat, '("- coulomb ", d30.16)') TEGRAL*VCOEFF
             ENDIF
     7    CONTINUE
+         write(fh_hmat, '("= coulomb ", d30.16)') accu_c
 !
          IBUG1 = 0
 
@@ -306,6 +321,7 @@
 !
             CALL RKCO_GG (IC, IR, BREID, 1, 2)
 !
+            accu_b = 0.0d0
             DO 8 I = 1, NVCOEF
                IF (DABS (COEFF(I)) > CUTOFF) THEN
                   NMCBP = NMCBP + 1
@@ -336,6 +352,7 @@
                                   LABEL(5,I), TEGRAL)
                   ENDIF
                   CONTR = COEFF(I)*TEGRAL
+                  !write(fh_hmat, '(" % itype:", i5, i5)') LABEL(6,I), itype
                   IF (LABEL(6,I) > 0) THEN
                      ELEMNT = ELEMNT + CONTR
                   ELSE
@@ -343,9 +360,13 @@
 !                           clue: rkco<-breid<-talk<-label(6,i)
                      NCORE = NCORE + 1
                      ELSTO = ELSTO + CONTR
+                     !write(fh_hmat, '(" % setting ELSTO")')
                   ENDIF
+                  accu_b = accu_b + CONTR
+                  !write(fh_hmat, '("- breit   ", d30.16)') CONTR
                ENDIF
     8       CONTINUE
+            write(fh_hmat, '("= breit   ", d30.16)') accu_b
 !
             IBUG1 = 0
 !
@@ -377,6 +398,12 @@
 !
          WRITE (imcdf) NELC, ELSTO, (EMT(IR), IR = 1, NELC),            &
                                    (IROW(IR), IR = 1, NELC)
+         write(fh_hmat, '("> NECL ", i3)') NELC
+         write(fh_hmat, '("> ELSTO   ", d30.16)') ELSTO
+         do ir = 1, nelc - 1
+             write(fh_hmat, '(7(" "),i3, d30.12)') IROW(IR), EMT(IR)
+         enddo
+         write(fh_hmat, '(7(" "),i3, d30.12)') IROW(nelc), EMT(nelc) + ELSTO
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! This EAV (and the above EMT) does not have ELSTO.
          EAV = EAV + EMT(NELC)
