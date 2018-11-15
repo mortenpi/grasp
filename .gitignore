@@ -5,3 +5,6 @@ bin/
 build/
 build-*/
 CMakeLists.user
+
+# Doxygen
+doc/html/
