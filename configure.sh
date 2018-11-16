@@ -12,16 +12,17 @@ for arg in $@; do
 	fi
 done
 
+# We create an empty CMakeLists.user file, so that the user would not have to
+# re-create it later.
+touch "${GRASP}/CMakeLists.user" || exit
+
+# Determine and check the build directory
 build_abspath="${GRASP}/${build_directory}"
-echo "Creating: ${build_abspath}"
+echo "Build directory: ${build_abspath}"
 if [ -e "${build_abspath}" ]; then
 	>&2 echo "ERROR: Build directory already exists."
 	exit 1
 fi
-
-# We create an empty CMakeLists.user file, so that the user would not have to
-# re-create it later.
-touch "${GRASP}/CMakeLists.user"
 
 # We run the default setup for CMake's out-of-tree builds
 #
@@ -30,7 +31,8 @@ touch "${GRASP}/CMakeLists.user"
 #     cmake ..
 #
 mkdir "${build_abspath}" && cd "${build_abspath}" \
-	&& cmake ${cmake_args} "${GRASP}"
+	&& cmake ${cmake_args} "${GRASP}" \
+	|| exit
 
 # Note: we need to use spaces, not tabs, to indent in the heredoc.
 cat <<-EOF
