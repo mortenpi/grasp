@@ -1,5 +1,8 @@
 # General Relativistic Atomic Structure Package
 
+[![Doxygen Documentation](https://img.shields.io/badge/documentation-master-blue.svg)](http://mortenpi.eu/grasp/)
+[![Travis Status](https://travis-ci.com/mortenpi/grasp.svg?token=J2TJDmxGV6c9f8C3LXps&branch=master)](https://travis-ci.com/mortenpi/grasp)
+
 This version of GRASP is a major revision of the previous GRASP2K package by
 P. Jonsson, G. Gaigalas, J. Bieron, C. Froese Fischer, and I.P. Grant Computer
 Physics Communication, 184, 2197 - 2203 (2013) written in FORTRAN 77 style with
