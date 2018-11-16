@@ -266,5 +266,5 @@ var searchData=
   ['grid',['grid',['../rwfnmchfmcdf_8f90.html#abf24638d2d9ccd1216003a1a85a567ca',1,'rwfnmchfmcdf.f90']]],
   ['grid_5fc',['grid_c',['../namespacegrid__c.html',1,'']]],
   ['grid_5fc_2ef90',['grid_C.f90',['../grid__C_8f90.html',1,'']]],
-  ['grasp_3a_20general_20relativistic_20atomic_20structure_20package',['GRASP: General Relativistic Atomic Structure Package',['../index.html',1,'']]]
+  ['general_20relativistic_20atomic_20structure_20package',['General Relativistic Atomic Structure Package',['../index.html',1,'']]]
 ];
