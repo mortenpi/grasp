@@ -40,7 +40,10 @@ if [ "${TRAVIS_BRANCH}" == "master" ] && [ "${TRAVIS_PULL_REQUEST}" == "false" ]
 	rsync -a ${TRAVIS_BUILD_DIR}/doc/html/ . || exit
 	# Git add, commit and push the updated documentation:
 	git add -A || exit
-	git commit -m "Deploy documentation" || exit
+	git commit -m "Deploy documentation" || {
+		echo "git commit returned a non-zero exit code ($?). This is expected if there are no changes to commit."
+		exit 0
+	}
 	git push --set-upstream origin gh-pages || exit
 
 	echo "Documentation deployment complete."
