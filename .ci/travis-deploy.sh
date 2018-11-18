@@ -22,11 +22,17 @@ fi
 if [ "${TRAVIS_BRANCH}" == "master" ] && [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
 	# Write the SSH deploy key to a file.
 	if [ -z ${GITHUB_DEPLOY+x} ]; then >&2 echo "ERROR: \$GITHUB_DEPLOY variable is unset."; exit 1; fi
-	base64 -d > .ci/github_deploy <<-EOF
+	mkdir -p ~/.ssh
+	base64 -d > ~/.ssh/github_deploy <<-EOF
 		${GITHUB_DEPLOY}
 	EOF
-	chmod og-rwx .ci/github_deploy # the SSH key needs conservative permissions
-	ssh-add .ci/github_deploy # make the key available to ssh-agent
+	chmod og-rwx ~/.ssh/github_deploy # the SSH key needs conservative permissions
+	cat - >> ~/.ssh/config <<-EOF
+	Host github.com
+		StrictHostKeyChecking no
+		HostName github.com
+		IdentityFile ~/.ssh/github_deploy
+	EOF
 
 	# Pushing the documentation to the gh-pages branch. First, we'll create a
 	# temporary directory and clone the repository again, and cd there:
