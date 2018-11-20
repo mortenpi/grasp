@@ -163,6 +163,9 @@ else()
     message("MPI libraries not found. Not building MPI-dependent programs.")
 endif(MPI_Fortran_FOUND)
 
+# Unit and integration tests
+add_subdirectory("test")
+
 # We use the CMakeLists.txt so that the user could easily add additional targets
 # to the GRASP build, such as additional (external) GRASP programs that need to
 # be linked agains the GRASP libraries.

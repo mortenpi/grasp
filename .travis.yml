@@ -9,8 +9,8 @@ jobs:
       script:
         - ./configure.sh --debug && cd build-debug/
         - make
-        - make test
         - make install
+        - make test
 
     - stage: documentation
       before_install:
