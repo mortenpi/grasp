@@ -131,4 +131,4 @@ Program (Contract No. POIG.02.01.00-12-023/08).
 
 The code in this repository is distributed under the [MIT license](LICENSE.md).
 The associated manual "A practical guide to GRASP2018" is distributed under
-[the Creative Commons Attribution 4.0 International (CC BY 4.0) license](https://creativecommons.org/licenses/by-sa/4.0/legalcode).
+[the Creative Commons Attribution 4.0 International (CC BY 4.0) license](https://creativecommons.org/licenses/by/4.0/legalcode).
