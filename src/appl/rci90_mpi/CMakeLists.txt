@@ -134,6 +134,9 @@ add_executable(rci_mpi
     wghtd5_I.f90
     zkf.f90
     zkf_I.f90
+
+    # Additional modules for global state
+    where_C.f90
 )
 target_link_libraries_Fortran(rci_mpi PUBLIC mod 9290 rang90 mpi90 dvd90)
 install(TARGETS rci_mpi DESTINATION bin/)
