@@ -81,6 +81,21 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a href="http://mortenpi.eu/grasp/"></a> <a href="https://travis-ci.com/mortenpi/grasp"></a></p>
+<h2>Quickstart</h2>
+<p><b>Prerequisites.</b> You need to have CMake, a Fortran compiler and the BLAS and LAPACK libraries installed. To compile the MPI programs you also need to have the MPI libraries installed. CMake should generally find the libraries automatically &ndash; if not, please open an issue.</p>
+<p><b>Compilation.</b> To start the build, you first need to set up the CMake build directory. You can use the <code>configure.sh</code> helper script to do that quickly by calling</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;./configure.sh</div></div><!-- fragment --><p>This will create a directory called <code>build/</code> which is where the compilation occurs. To compile GRASP, call</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;cd build/</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;make</div></div><!-- fragment --><p>You can also run the build in parallel on multiple cores with <code>make -jN</code>, where <code>N</code> is the number of cores you would like to use.</p>
+<p>Finally, to place the GRASP binaries in the <code>bin/</code> directory, you can to install them with</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;make install</div></div><!-- fragment --><p><b>Running GRASP.</b> An easy way to run the different GRASP programs is to source the <code>envset.sh</code> script</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;source envset.sh</div></div><!-- fragment --><p>This will set up, in you current shell session:</p>
+<ol type="1">
+<li>The <code>$GRASP</code> environment variable that points to the root directory.</li>
+<li>The <code>grasp</code> shell command with tab-completion for command names. You can then call a particular GRASP program with e.g. <code>grasp rmcdhf</code>.</li>
+</ol>
+<p><b>Debug builds.</b> If you need binaries with debug symbols, you can easily set up a separate debug build.</p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;./configure.sh --debug</div></div><!-- fragment --><p>You can also install the debug binaries to <code>$GRASP/bin</code>, but that is not recommended. Instead, you should call them with <code>$GRASP/build-debug/bin/&lt;program name&gt;</code>.</p>
+<h2>Overview</h2>
 <p>This version of GRASP is a major revision of the previous GRASP2K package by P. Jonsson, G. Gaigalas, J. Bieron, C. Froese Fischer, and I.P. Grant Computer Physics Communication, 184, 2197 - 2203 (2013) written in FORTRAN 77 style with COMMON and using Cray pointers for memory management. The present version is a FORTRAN95 translation using standard FORTRAN for memory management. In addition, COMMONS have been replaced with MODULES, with some COMMONS merged. Some algorithms have been changed to improve performance for large cases and efficiently.</p>
 <p>The previous package, was an extension and modification of GRASP92 by Farid Parpia, Charlotte Froese Fischer, and Ian Grant. Computer Physics Communication, 94, 249-271 (1996)</p>
 <p>Development of this package was performed largely by:</p>
