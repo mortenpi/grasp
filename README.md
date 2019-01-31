@@ -3,6 +3,57 @@
 [![Doxygen Documentation](https://img.shields.io/badge/documentation-master-blue.svg)](http://mortenpi.eu/grasp/)
 [![Travis Status](https://travis-ci.com/mortenpi/grasp.svg?token=J2TJDmxGV6c9f8C3LXps&branch=master)](https://travis-ci.com/mortenpi/grasp)
 
+## Quickstart
+
+**Prerequisites.**
+You need to have CMake, a Fortran compiler and the BLAS and LAPACK libraries installed. To compile the MPI programs you also need to have the MPI libraries installed. CMake should generally find the libraries automatically -- if not, please open an issue.
+
+**Compilation.**
+To start the build, you first need to set up the CMake build directory. You can use the `configure.sh` helper script to do that quickly by calling
+
+```bash
+./configure.sh
+```
+
+This will create a directory called `build/` which is where the compilation occurs. To compile GRASP, call
+
+```bash
+cd build/
+make
+```
+
+You can also run the build in parallel on multiple cores with `make -jN`, where `N` is the number of cores you would like to use.
+
+Finally, to place the GRASP binaries in the `bin/` directory, you can to install them with
+
+```bash
+make install
+```
+
+**Running GRASP.**
+An easy way to run the different GRASP programs is to source the `envset.sh` script
+
+```bash
+source envset.sh
+```
+
+This will set up, in you current shell session:
+
+1. The `$GRASP` environment variable that points to the root directory.
+2. The `grasp` shell command with tab-completion for command names. You can then call a particular GRASP program with e.g. `grasp rmcdhf`.
+
+**Debug builds.**
+If you need binaries with debug symbols, you can easily set up a separate debug build.
+
+```bash
+./configure.sh --debug
+```
+
+You can also install the debug binaries to `$GRASP/bin`, but that is not recommended. Instead, you should call them with `$GRASP/build-debug/bin/<program name>`.
+
+ 
+## Overview
+
 This version of GRASP is a major revision of the previous GRASP2K package by
 P. Jonsson, G. Gaigalas, J. Bieron, C. Froese Fischer, and I.P. Grant Computer
 Physics Communication, 184, 2197 - 2203 (2013) written in FORTRAN 77 style with
