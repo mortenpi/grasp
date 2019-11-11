@@ -1,6 +1,6 @@
 # The default binary installation directories
-bin/
-lib/
+/bin/
+/lib/
 
 # CMake out-of-tree build directories
 build/
