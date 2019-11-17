@@ -10,11 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Run a one-line script
-      run: curl \
-             -X GET \
-             -H"Accept: application/vnd.github.v3+json" \
-             -H"authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-             "https://api.github.com/repos/mortenpi/grasp"
+      run: bash run.sh
 
     - name: Run a multi-line script
       run: |
