@@ -22,6 +22,41 @@ export MPI_TMP="tmp_mpi"
 #    $ GRASP_NPROC=4 grasp rangular_mpi
 #
 function grasp {
+	# Parse out options with getopt. The + in the -o option makes sure that we
+	# do not parse options that come after the first positional argument (which
+	# we expect to be the user-specified GRASP binary, e.g. rmcdhf).
+	VERBOSE=0
+	BUILDDIR=""
+	options=$(getopt -n grasp -o +hb: -- "$@")
+	if ! [ $? -eq 0 ]; then
+		>&2 echo "ERROR: Invalid arguments to grasp ($@)"
+		return 1
+	fi
+	eval set -- "$options"
+	while true; do
+	    case "$1" in
+	    -b)
+			shift
+			echo "user specified buildir $1"
+	        BUILDDIR=$1
+			if ! [ -d "${GRASP}/${BUILDDIR}" ]; then
+				>&2 echo "ERROR: No such build directory \${GRASP}/${BUILDDIR}"
+				>&2 echo "  at ${GRASP}/${BUILDDIR}"
+				return 1
+			fi
+	        ;;
+	    --)
+	        shift
+	        break
+	        ;;
+	    esac
+	    shift
+	done
+
+	# We're left with just the positional arguments. Note: everything after
+	# the first positional argument gets interpreted as non-option in getopt
+	# above. So they are still part of $@ and we can pass them on to the GRASP
+	# binary.
 	local command=$1
 	shift
 
@@ -41,7 +76,12 @@ function grasp {
 		fi
 	fi
 
-	command_path="${GRASP}/bin/${command}"
+	if [ -z "$BUILDDIR" ]; then
+		command_path="${GRASP}/bin/${command}"
+	else
+		>&2 echo "WARNING: Running non-installed GRASP binaries from \${GRASP}/${BUILDDIR}"
+		command_path="${GRASP}/${BUILDDIR}/bin/${command}"
+	fi
 	if ! [ -f "${command_path}" ]; then
 		>&2 echo "ERROR: Missing GRASP program ${command}"
 		>&2 echo "  Searched at ${command_path}"
