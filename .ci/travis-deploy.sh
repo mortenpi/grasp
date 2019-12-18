@@ -19,7 +19,7 @@ if ! [ -d "doc/html" ]; then
 fi
 
 # If this build is a non-PR build of the master branch, try to deploy to gh-pages
-if [ "${TRAVIS_BRANCH}" == "master" ] && [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
+if [ "${TRAVIS_BRANCH}" == "mp/travis-doxygen" ] && [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
 	# Write the SSH deploy key to a file.
 	if [ -z ${GITHUB_DEPLOY+x} ]; then >&2 echo "ERROR: \$GITHUB_DEPLOY variable is unset."; exit 1; fi
 	mkdir -p ~/.ssh
@@ -43,7 +43,7 @@ if [ "${TRAVIS_BRANCH}" == "master" ] && [ "${TRAVIS_PULL_REQUEST}" == "false" ]
 	# Remove all the old files (but not stuff under .git)
 	find . -type f -not -regex "\./\.git/.*" -delete
 	# Copy over the new docs:
-	rsync -a ${TRAVIS_BUILD_DIR}/doc/html/ . || exit
+	rsync -a ${TRAVIS_BUILD_DIR}/doc/html/ travis-test-build/ || exit
 	# Git add, commit and push the updated documentation:
 	git add -A || exit
 	git commit -m "Deploy documentation" || {
