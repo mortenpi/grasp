@@ -98,7 +98,7 @@ set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
 #
 #     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgfortran")
 #
-set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fno-automatic")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fno-automatic -fpic")
 
 message("Compiler flags etc. for this GRASP build:")
 message("* CMAKE_BUILD_TYPE:               ${CMAKE_BUILD_TYPE}")
@@ -116,6 +116,8 @@ message("* BLAS_LIBRARIES:                 ${BLAS_LIBRARIES}")
 message("* BLAS_LINKER_FLAGS:              ${BLAS_LINKER_FLAGS}")
 message("* LAPACK_LIBRARIES:               ${LAPACK_LIBRARIES}")
 message("* LAPACK_LINKER_FLAGS:            ${LAPACK_LINKER_FLAGS}")
+
+add_subdirectory("src/libgrasp/src")
 
 # GRASP libraries
 add_subdirectory("src/lib/libmod")

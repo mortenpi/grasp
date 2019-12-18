@@ -140,5 +140,5 @@ add_executable(rci
     # Additional modules for global state
     where_C.f90
 )
-target_link_libraries_Fortran(rci PUBLIC mod 9290 rang90 dvd90)
+target_link_libraries_Fortran(rci PUBLIC mod 9290 rang90 dvd90 grasp-static)
 install(TARGETS rci DESTINATION bin/)

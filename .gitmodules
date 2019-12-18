@@ -1,0 +1,3 @@
+[submodule "src/libgrasp"]
+	path = src/libgrasp
+	url = git@github.com:compas/libgrasp.git
