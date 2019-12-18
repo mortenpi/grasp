@@ -125,6 +125,7 @@ message("* LAPACK_LIBRARIES:               ${LAPACK_LIBRARIES}")
 message("* LAPACK_LINKER_FLAGS:            ${LAPACK_LINKER_FLAGS}")
 
 # GRASP libraries
+add_subdirectory("src/libgrasp")
 add_subdirectory("src/lib/libmod")
 add_subdirectory("src/lib/lib9290")
 add_subdirectory("src/lib/libdvd90")
