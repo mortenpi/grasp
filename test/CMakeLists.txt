@@ -11,15 +11,37 @@ add_library(grasptest STATIC
 setup_fortran_modules(grasptest)
 
 # Tests for libgrasp
+# ------------------
+# libgrasp constants
 add_executable(test.libgrasp_constants libgrasp/constants.f90)
 target_link_libraries_Fortran(test.libgrasp_constants PUBLIC grasp grasptest)
 add_test(libgrasp_constants test.libgrasp_constants)
-
+# Reading isodata files
 add_executable(test.libgrasp_isodata_read libgrasp/isodata/read.f90)
 target_link_libraries_Fortran(test.libgrasp_isodata_read PUBLIC grasp grasptest)
 add_test(libgrasp_isodata_read test.libgrasp_isodata_read)
 set_property(TEST libgrasp_isodata_read PROPERTY ENVIRONMENT
     "GRASP_ISODATA_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/libgrasp/isodata"
+)
+# Writing isodata files
+add_executable(test.libgrasp_isodata_write libgrasp/isodata/write.f90)
+target_link_libraries_Fortran(test.libgrasp_isodata_write PUBLIC grasp grasptest)
+add_test(libgrasp_isodata_write test.libgrasp_isodata_write)
+# Make sure the written isodata files are byte-by-byte identical
+add_test(NAME libgrasp_isodata_write.zeros
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lib/filematch.sh
+    "${CMAKE_CURRENT_SOURCE_DIR}/libgrasp/isodata/isodata_write.zeros.ref"
+    "isodata_write.zeros.test"
+)
+add_test(NAME libgrasp_isodata_write.values
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/lib/filematch.sh
+    "${CMAKE_CURRENT_SOURCE_DIR}/libgrasp/isodata/isodata_write.values.ref"
+    "isodata_write.values.test"
+)
+set_tests_properties(
+    libgrasp_isodata_write.zeros libgrasp_isodata_write.values
+    PROPERTIES
+    DEPENDS libgrasp_isodata_write
 )
 
 # Check lib92 routines -- this currently acts as a simple integration test,
