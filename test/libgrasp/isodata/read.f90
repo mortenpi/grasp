@@ -1,5 +1,5 @@
 !> Tests that derived constants have sane value.
-program libgrasp_isodata
+program libgrasp_isodata_read
    use, intrinsic :: iso_fortran_env, only: real64
    use grasptest, only: test_isequal, abstol, getenv_allocating
    use grasp_datafiles, only: isodata, isodata_read
@@ -54,4 +54,4 @@ program libgrasp_isodata
       stop 1
    end if
 
-end program libgrasp_isodata
+end program libgrasp_isodata_read
