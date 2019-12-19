@@ -10,14 +10,17 @@ add_library(grasptest STATIC
 )
 setup_fortran_modules(grasptest)
 
-# Check lib92 routines -- this currently acts as a simple integration test,
-# making sure that everything actually got compiled properly. The test checks
-# that the QUAD routine from lib92 actually produces reasonable numbers.
-add_executable(test.libgrasp_constants
-    libgrasp_constants.f90
-)
+# Tests for libgrasp
+add_executable(test.libgrasp_constants libgrasp_constants.f90)
 target_link_libraries_Fortran(test.libgrasp_constants PUBLIC grasp grasptest)
 add_test(libgrasp_constants test.libgrasp_constants)
+
+add_executable(test.libgrasp_isodata libgrasp_isodata.f90)
+target_link_libraries_Fortran(test.libgrasp_isodata PUBLIC grasp grasptest)
+add_test(libgrasp_isodata test.libgrasp_isodata)
+set_property(TEST libgrasp_isodata PROPERTY ENVIRONMENT
+    "GRASP_ISODATA_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/isodata"
+)
 
 # Check lib92 routines -- this currently acts as a simple integration test,
 # making sure that everything actually got compiled properly. The test checks
