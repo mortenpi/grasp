@@ -14,18 +14,22 @@ setup_fortran_modules(grasptest)
 # ------------------
 # libgrasp constants
 add_executable(test.libgrasp_constants libgrasp/constants.f90)
-target_link_libraries_Fortran(test.libgrasp_constants PUBLIC grasp grasptest)
+target_link_libraries_Fortran(test.libgrasp_constants PUBLIC grasp-static grasptest)
 add_test(libgrasp_constants test.libgrasp_constants)
+# libgrasp constants (but with shared library)
+add_executable(test.libgrasp_constants.shared libgrasp/constants.f90)
+target_link_libraries_Fortran(test.libgrasp_constants.shared PUBLIC grasp grasptest)
+add_test(libgrasp_constants.shared test.libgrasp_constants.shared)
 # Reading isodata files
 add_executable(test.libgrasp_isodata_read libgrasp/isodata/read.f90)
-target_link_libraries_Fortran(test.libgrasp_isodata_read PUBLIC grasp grasptest)
+target_link_libraries_Fortran(test.libgrasp_isodata_read PUBLIC grasp-static grasptest)
 add_test(libgrasp_isodata_read test.libgrasp_isodata_read)
 set_property(TEST libgrasp_isodata_read PROPERTY ENVIRONMENT
     "GRASP_ISODATA_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/libgrasp/isodata"
 )
 # Writing isodata files
 add_executable(test.libgrasp_isodata_write libgrasp/isodata/write.f90)
-target_link_libraries_Fortran(test.libgrasp_isodata_write PUBLIC grasp grasptest)
+target_link_libraries_Fortran(test.libgrasp_isodata_write PUBLIC grasp-static grasptest)
 add_test(libgrasp_isodata_write test.libgrasp_isodata_write)
 # Make sure the written isodata files are byte-by-byte identical
 add_test(NAME libgrasp_isodata_write.zeros
