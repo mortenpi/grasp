@@ -50,6 +50,43 @@ module grasp_datafiles
       module procedure isodata_write, isodata_write_unit
    end interface isodata_write
 
+   !> Represents a single orbital, as stored in an `rwfn` / `.w` file.
+   !!
+   !! The orbital, labelled by the \f$n\f$ and \f$\kappa\f$ quantum numbers, is
+   !! assumed to have the following form
+   !!
+   !! \f[
+   !!   \phi_{m}(n\kappa; r, \theta, \phi) = \frac{1}{r}
+   !!   \left( \begin{array}{c}
+   !!     P(r) \chi_{\kappa m}(\theta, \phi) \\
+   !!     i Q(r) \chi_{-\kappa m}(\theta, \phi)
+   !!   \end{array} \right)
+   !! \f]
+   !!
+   !! where \f$\chi_{\kappa m}(\theta, \phi)\f$ are the analytically given
+   !! spin-spherical harmonics. The radial functions \f$P(r)\f$ and \f$Q(r)\f$
+   !! are defined on a grid.
+   type orbital
+      !> Principal quantum number \f$n\f$.
+      integer(int32) :: n
+      !> Angular momentum quantum number \f$\kappa\f$.
+      integer(int32) :: kappa
+      real(real64) :: e
+      !> Number of points in the `r`, `p` and `q` arrays.
+      integer(int32) :: npts
+      !> Contains the radial grid.
+      real(real64), allocatable, dimension(:) :: r
+      !> Array containing the values of the large component \f$P(r)\f$.
+      real(real64), allocatable, dimension(:) :: p
+      !> Array containing the values of the small component \f$Q(r)\f$.
+      real(real64), allocatable, dimension(:) :: q
+    end type
+
+    !> Read an orbital (`.w`) file into a list of `orbital` objects.
+   interface orbitals_read
+      module procedure orbitals_read, orbitals_read_unit
+   end interface orbitals_read
+
 contains
 
    !> Reads an `isodata` file.
@@ -215,5 +252,116 @@ contains
        status = .false.
        return
    end function isodata_write_unit
+
+   function orbitals_read(filename, orbitals) result(status)
+      ! Arguments and return type
+      character(len=*), intent(in) :: filename
+      type(orbital), allocatable, dimension(:), intent(out) :: orbitals
+      logical :: status
+      ! Local variables
+      integer :: fileunit, ios
+      character(255) :: iom
+
+      open (newunit=fileunit, file=filename, status="old", form="unformatted", iostat=ios, iomsg=iom)
+      if (ios /= 0) then
+         print *, "ERROR: Unable to open file:", ios, iom
+         status = .false.
+         return
+      endif
+      status = orbitals_read(fileunit, orbitals)
+      close(fileunit)
+   end function orbitals_read
+
+   function orbitals_read_unit(fileunit, orbitals) result(status)
+      ! Arguments and return type
+      integer, intent(in) :: fileunit
+      type(orbital), allocatable, dimension(:), intent(out) :: orbitals
+      logical :: status
+      ! Local variables
+      integer :: ios, i, norbitals = 0
+      character(255) :: iom
+      character(6) :: g92mix = '000000' ! initialized to something
+      type(orbital), allocatable, dimension(:) :: orbitals_tmp
+      logical :: ioerror
+
+      read (fileunit, iostat=ios, iomsg=iom) g92mix
+      if(ios /= 0) goto 999
+      if (g92mix /= 'G92RWF') then
+         print '(a," (",a6,")")', "ERROR: Invalid file header", g92mix
+         status = .false.
+         return
+      endif
+
+      allocate(orbitals_tmp(4))
+      do while(readnextorbital(ioerror))
+         if(ioerror) goto 999
+      enddo
+
+      allocate(orbitals(norbitals))
+      orbitals(:) = orbitals_tmp(1:norbitals)
+      status = .true.
+      return
+
+      ! Error handling for IO errors (reachable via goto)
+      999 continue
+      print *, "ERROR: error reading from isodata file:", ios, iom
+      status = .false.
+      return
+
+   contains
+
+      function readnextorbital(ioerror)
+         logical, intent(out) :: ioerror
+         logical :: readnextorbital
+
+         integer :: npy, naky, my
+         real(real64) :: ey
+         real(real64), allocatable, dimension(:) :: py, qy, ry
+         type(orbital), allocatable, dimension(:) :: orbitals_swap
+
+         ! Try reading the orbital information. If this fails with some IO error,
+         ! then we assume that we have run out of orbitals in the file.
+         read(fileunit, iostat=ios, iomsg=iom) npy, naky, ey, my
+         if(ios /= 0) then
+            readnextorbital = .false.
+            return
+         endif
+
+         ! If we've run out of space in orbitals_tmp, then we double its allocation
+         if(norbitals >= size(orbitals_tmp)) then
+            orbitals_swap = orbitals_tmp
+            deallocate(orbitals_tmp)
+            allocate(orbitals_tmp(2*size(orbitals_swap)))
+            orbitals_tmp(1:size(orbitals_swap)) = orbitals_swap(:)
+            deallocate(orbitals_swap)
+         endif
+
+         ! Add the current orbital to the orbitals_tmp array
+         norbitals = norbitals + 1
+         orbitals_tmp(norbitals)%n = npy
+         orbitals_tmp(norbitals)%kappa = naky
+         orbitals_tmp(norbitals)%e = ey
+         orbitals_tmp(norbitals)%npts = my
+         ! Allocate and read in the P, Q and R arrays too
+         allocate(orbitals_tmp(norbitals)%p(my))
+         allocate(orbitals_tmp(norbitals)%q(my))
+         allocate(orbitals_tmp(norbitals)%r(my))
+         read(fileunit, iostat=ios, iomsg=iom) (orbitals_tmp(norbitals)%p(i), i=1,my), (orbitals_tmp(norbitals)%q(i), i=1,my)
+         if(ios /= 0) goto 999
+         read(fileunit, iostat=ios, iomsg=iom) (orbitals_tmp(norbitals)%r(i), i=1,my)
+         if(ios /= 0) goto 999
+
+         readnextorbital = .true. ! There might be another one coming..
+         ioerror = .false.
+         return
+
+         ! Error handling for IO errors (reachable via goto)
+         999 continue
+         print *, "ERROR: error reading from isodata file:", ios, iom
+         ioerror = .true.
+         return
+      end function readnextorbital
+
+   end function orbitals_read_unit
 
 end module grasp_datafiles

@@ -1,4 +1,5 @@
 # Make sure the test executables end up on build/test/, not build/bin/
+set(BUILD_BINDIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 unset(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 
 # Let's catch implicit uses of routines in the test prorams and libraries
@@ -46,6 +47,33 @@ set_tests_properties(
     libgrasp_isodata_write.zeros libgrasp_isodata_write.values
     PROPERTIES
     DEPENDS libgrasp_isodata_write
+)
+
+# Reading orbital files
+add_test(NAME libgrasp_orbitals_generate
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libgrasp/orbitals/generate.sh
+)
+set_property(TEST libgrasp_orbitals_generate PROPERTY ENVIRONMENT
+    "GRASP_BINDIR=${BUILD_BINDIR}"
+)
+set_tests_properties(libgrasp_orbitals_generate PROPERTIES FIXTURES_SETUP libgrasp_orbitals_generate.fixture)
+
+add_test(NAME libgrasp_orbitals_generate.cleanup
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libgrasp/orbitals/generate.sh
+    "cleanup"
+)
+set_tests_properties(libgrasp_orbitals_generate.cleanup PROPERTIES FIXTURES_CLEANUP libgrasp_orbitals_generate.fixture)
+
+add_executable(test.libgrasp_orbitals_read libgrasp/orbitals/read.f90)
+target_link_libraries_Fortran(test.libgrasp_orbitals_read PUBLIC grasp-static grasptest)
+add_test(libgrasp_orbitals_read test.libgrasp_orbitals_read)
+set_property(TEST libgrasp_orbitals_read PROPERTY ENVIRONMENT
+    "GRASP_ORBITALS_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/libgrasp/orbitals"
+)
+set_tests_properties(
+    libgrasp_orbitals_read
+    PROPERTIES
+    FIXTURES_REQUIRED libgrasp_orbitals_generate.fixture
 )
 
 # Check lib92 routines -- this currently acts as a simple integration test,
