@@ -66,9 +66,6 @@ contains
       ! Local variables
       integer :: fileunit, ios
       character(255) :: iom
-      character(6) :: g92mix
-
-      real(real64) :: fermi_a, fermi_c, nuclearmass
 
       open (newunit=fileunit, file=filename, status="old", iostat=ios, iomsg=iom)
       if (ios /= 0) then
@@ -214,7 +211,7 @@ contains
 
        ! Error handling for IO errors (reachable via goto)
        999 continue
-       print *, "ERROR: error reading from isodata file:", ios, iom
+       print *, "ERROR: error writing to isodata file:", ios, iom
        status = .false.
        return
    end function isodata_write_unit
