@@ -76,6 +76,11 @@ program libgrasp_isodata_write
       close(fileunit)
    endif
 
+   if (.not. success) then
+      print *, "libgrasp_isodata_write: Tests failed."
+      stop 1
+   end if
+
 contains
 
    subroutine delete_file(filename)
