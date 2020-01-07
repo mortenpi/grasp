@@ -76,6 +76,26 @@ set_tests_properties(
     FIXTURES_REQUIRED libgrasp_orbitals_generate.fixture
 )
 
+# Writing orbital files
+add_executable(test.libgrasp_orbitals_write libgrasp/orbitals/write.f90)
+target_link_libraries_Fortran(test.libgrasp_orbitals_write PUBLIC grasp-static grasptest)
+add_test(libgrasp_orbitals_write test.libgrasp_orbitals_write)
+set_tests_properties(libgrasp_orbitals_write PROPERTIES
+    FIXTURES_REQUIRED "libgrasp_orbitals_write.fixture;libgrasp_orbitals_generate.fixture"
+    FIXTURES_SETUP libgrasp_orbitals_write.checkoutput.fixture
+    ENVIRONMENT "GRASP_ORBITALS_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/libgrasp/orbitals"
+)
+# ....
+add_test(NAME libgrasp_orbitals_write.checkoutput COMMAND diff "rwfn.out" "${CMAKE_CURRENT_SOURCE_DIR}/libgrasp/orbitals/rwfn.inp")
+set_tests_properties(libgrasp_orbitals_write.checkoutput PROPERTIES
+    FIXTURES_REQUIRED "libgrasp_orbitals_write.checkoutput.fixture;libgrasp_orbitals_write.fixture;libgrasp_orbitals_generate.fixture"
+)
+# Cleanup
+add_test(NAME libgrasp_orbitals_write.setup COMMAND sh -c "rm -vf rwfn.*")
+set_tests_properties(libgrasp_orbitals_write.setup PROPERTIES FIXTURES_SETUP libgrasp_orbitals_write.fixture)
+add_test(NAME libgrasp_orbitals_write.cleanup COMMAND sh -c "rm -vf rwfn.*")
+set_tests_properties(libgrasp_orbitals_write.cleanup PROPERTIES FIXTURES_CLEANUP libgrasp_orbitals_write.fixture)
+
 # Check lib92 routines -- this currently acts as a simple integration test,
 # making sure that everything actually got compiled properly. The test checks
 # that the QUAD routine from lib92 actually produces reasonable numbers.

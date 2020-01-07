@@ -71,7 +71,7 @@ module grasp_datafiles
       integer(int32) :: n
       !> Angular momentum quantum number \f$\kappa\f$.
       integer(int32) :: kappa
-      real(real64) :: e
+      real(real64) :: e, pz
       !> Number of points in the `r`, `p` and `q` arrays.
       integer(int32) :: npts
       !> Contains the radial grid.
@@ -86,6 +86,11 @@ module grasp_datafiles
    interface orbitals_read
       module procedure orbitals_read, orbitals_read_unit
    end interface orbitals_read
+
+   !> Writes a list of `orbital` objects into an orbital (`.w`) file.
+  interface orbitals_write
+     module procedure orbitals_write, orbitals_write_unit
+  end interface orbitals_write
 
 contains
 
@@ -278,12 +283,13 @@ contains
       type(orbital), allocatable, dimension(:), intent(out) :: orbitals
       logical :: status
       ! Local variables
-      integer :: ios, i, norbitals = 0
+      integer :: ios, i, norbitals
       character(255) :: iom
-      character(6) :: g92mix = '000000' ! initialized to something
+      character(6) :: g92mix
       type(orbital), allocatable, dimension(:) :: orbitals_tmp
       logical :: ioerror
 
+      g92mix = '000000' ! initialized to something
       read (fileunit, iostat=ios, iomsg=iom) g92mix
       if(ios /= 0) goto 999
       if (g92mix /= 'G92RWF') then
@@ -292,7 +298,8 @@ contains
          return
       endif
 
-      allocate(orbitals_tmp(4))
+      norbitals = 0
+      allocate(orbitals_tmp(64))
       do while(readnextorbital(ioerror))
          if(ioerror) goto 999
       enddo
@@ -346,7 +353,10 @@ contains
          allocate(orbitals_tmp(norbitals)%p(my))
          allocate(orbitals_tmp(norbitals)%q(my))
          allocate(orbitals_tmp(norbitals)%r(my))
-         read(fileunit, iostat=ios, iomsg=iom) (orbitals_tmp(norbitals)%p(i), i=1,my), (orbitals_tmp(norbitals)%q(i), i=1,my)
+         read(fileunit, iostat=ios, iomsg=iom)      &
+            orbitals_tmp(norbitals)%pz,             &
+            (orbitals_tmp(norbitals)%p(i), i=1,my), &
+            (orbitals_tmp(norbitals)%q(i), i=1,my)
          if(ios /= 0) goto 999
          read(fileunit, iostat=ios, iomsg=iom) (orbitals_tmp(norbitals)%r(i), i=1,my)
          if(ios /= 0) goto 999
@@ -363,5 +373,67 @@ contains
       end function readnextorbital
 
    end function orbitals_read_unit
+
+   !> Writes list of `orbital` objects into a file in the GRASP `.w` format.
+   !!
+   !! @param orbitals A list of `orbital` objects.
+   !! @param filename Path to the file to be written into.
+   !! @return Returns false if there were any I/O errors.
+   function orbitals_write(orbitals, filename) result(status)
+       type(orbital), dimension(:), intent(in) :: orbitals
+       character(len=*), intent(in) :: filename
+       logical :: status
+       ! Local variables
+       integer :: fileunit
+       integer :: ios
+       character(255) :: iom
+
+       open(newunit=fileunit, file=filename, status='new', form='unformatted', iostat=ios, iomsg=iom)
+       if (ios /= 0) then
+          print *, "ERROR: Unable to open file for writing:", ios, iom
+          status = .false.
+          return
+       endif
+       status = orbitals_write(orbitals, fileunit)
+       close(fileunit)
+   end function orbitals_write
+
+   !> Writes list of `orbital` objects into a file opened on `fileunit` in the
+   !! GRASP `.w` format.
+   !!
+   !! @param orbitals A list of `orbital` objects.
+   !! @param fileunit File unit to be written into.
+   !! @return Returns false if there were any I/O errors.
+   function orbitals_write_unit(orbitals, fileunit) result(status)
+       type(orbital), dimension(:), intent(in) :: orbitals
+       integer, intent(in) :: fileunit
+       logical :: status
+       ! Local variables
+       integer :: ios, i, k, npts
+       character(255) :: iom
+
+       ! Write the file header
+       write(fileunit, iostat=ios, iomsg=iom) 'G92RWF'
+       if(ios /= 0) goto 999
+
+       do k = 1, size(orbitals)
+          npts = orbitals(k)%npts
+          write(fileunit, iostat=ios, iomsg=iom) orbitals(k)%n, orbitals(k)%kappa, orbitals(k)%e, npts
+          if(ios /= 0) goto 999
+          write(fileunit, iostat=ios, iomsg=iom) orbitals(k)%pz, (orbitals(k)%p(i), i=1,npts), (orbitals(k)%q(i), i=1,npts)
+          if(ios /= 0) goto 999
+          write(fileunit, iostat=ios, iomsg=iom) (orbitals(k)%r(i), i=1,npts)
+          if(ios /= 0) goto 999
+       enddo
+
+       status = .true.
+       return
+
+       ! Error handling for IO errors (reachable via goto)
+       999 continue
+       print *, "ERROR: error writing to orbital file:", ios, iom
+       status = .false.
+       return
+   end function orbitals_write_unit
 
 end module grasp_datafiles

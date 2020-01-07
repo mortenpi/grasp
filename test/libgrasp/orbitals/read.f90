@@ -16,7 +16,6 @@ program libgrasp_orbitals_read
       print *, "Failed to get GRASP_ORBITALS_SOURCE environment variable"
       error stop
    endif
-   print *, sourcedirectory//"/rwfn.inp"
 
    ! Check error handling. This file should not exist.
    status = orbitals_read('/foo/bar/baz', orbitals)
