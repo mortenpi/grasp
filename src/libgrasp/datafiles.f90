@@ -258,6 +258,12 @@ contains
        return
    end function isodata_write_unit
 
+   !> Reads a list of `orbital` objects from a GRASP formatted orbital file.
+   !!
+   !! @param filename Path to the file to be read from.
+   !! @param orbitals An allocatable array that will be populated with the orbitals. If the
+   !!    array is already allocated, it will be first deallocated.
+   !! @return Returns false if there were any errors (I/O or otherwise).
    function orbitals_read(filename, orbitals) result(status)
       ! Arguments and return type
       character(len=*), intent(in) :: filename
@@ -277,6 +283,12 @@ contains
       close(fileunit)
    end function orbitals_read
 
+   !> Reads a list of `orbital` objects from an open GRASP formatted orbital file.
+   !!
+   !! @param fileunit File unit to be read from.
+   !! @param orbitals An allocatable array that will be populated with the orbitals. If the
+   !!    array is already allocated, it will be first deallocated.
+   !! @return Returns false if there were any errors (I/O or otherwise).
    function orbitals_read_unit(fileunit, orbitals) result(status)
       ! Arguments and return type
       integer, intent(in) :: fileunit
