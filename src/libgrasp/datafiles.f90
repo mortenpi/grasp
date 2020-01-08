@@ -88,10 +88,14 @@ module grasp_datafiles
    end interface orbitals_read
 
    !> Writes a list of `orbital` objects into an orbital (`.w`) file.
-  interface orbitals_write
-     module procedure orbitals_write, orbitals_write_unit
-  end interface orbitals_write
+   interface orbitals_write
+      module procedure orbitals_write, orbitals_write_unit
+   end interface orbitals_write
 
+   !> Represent a single \f$J\f$-block in an ASF file.
+   !!
+   !! **Note:** the fields that do not have docstrings attached are currently undocumented.
+   !! They may be renamed or removed without notice.
    type asfblock_t
       !> Number of atomic state functions (eigenvalues) in the block
       integer(int32) :: nstates
@@ -106,6 +110,10 @@ module grasp_datafiles
       real(real64), allocatable, dimension(:,:) :: cs
    end type asfblock_t
 
+   !> Represents an ASF file in the GRASP block structure.
+   !!
+   !! **Note:** the fields that do not have docstrings attached are currently undocumented.
+   !! They may be renamed or removed without notice.
    type asfs_t
       !> Total number of J-blocks
       integer(int32) :: nblocks
