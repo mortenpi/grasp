@@ -120,7 +120,7 @@ add_test(libgrasp_asfs_readwrite test.libgrasp_asfs_readwrite)
 set_tests_properties(
     libgrasp_asfs_readwrite
     PROPERTIES
-    FIXTURES_REQUIRED libgrasp_asfs_generate.fixture
+    FIXTURES_REQUIRED "libgrasp_asfs_generate.fixture;libgrasp_asfs_readwrite.fixture"
     FIXTURES_SETUP libgrasp_asfs_readwrite.checkoutput.fixture
     ENVIRONMENT "GRASP_ASFS_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/libgrasp/asfs"
 )
