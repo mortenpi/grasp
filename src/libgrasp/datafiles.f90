@@ -92,6 +92,37 @@ module grasp_datafiles
      module procedure orbitals_write, orbitals_write_unit
   end interface orbitals_write
 
+   type asfblock_t
+      !> Number of atomic state functions (eigenvalues) in the block
+      integer(int32) :: nstates
+      !> Number of CSFs in the block
+      integer(int32) :: ncsfs
+      integer(int32) :: IATJP, IASPA
+      integer(int32), allocatable, dimension(:) :: IVEC
+      real(real64) :: EAV
+      real(real64), allocatable, dimension(:) :: EVAL
+      !> ASF expansions coefficients in terms of CSFs (row index for CSF, column index for
+      !! ASF)
+      real(real64), allocatable, dimension(:,:) :: cs
+   end type asfblock_t
+
+   type asfs_t
+      !> Total number of J-blocks
+      integer(int32) :: nblocks
+      integer(int32) :: NELEC, NCFTOT, NW, NVECTOT, NVECSIZ
+      type(asfblock_t), allocatable, dimension(:) :: blocks
+   end type asfs_t
+
+   !> Read an orbital (`.w`) file into a list of `orbital` objects.
+   interface asfs_read
+      module procedure asfs_read, asfs_read_unit
+   end interface asfs_read
+
+   !> Writes an `asfs_t` object into a
+   interface asfs_write
+      module procedure asfs_write, asfs_write_unit
+   end interface asfs_write
+
 contains
 
    !> Reads an `isodata` file.
@@ -297,15 +328,15 @@ contains
       ! Local variables
       integer :: ios, i, norbitals
       character(255) :: iom
-      character(6) :: g92mix
+      character(6) :: g92rwf
       type(orbital), allocatable, dimension(:) :: orbitals_tmp
       logical :: ioerror
 
-      g92mix = '000000' ! initialized to something
-      read (fileunit, iostat=ios, iomsg=iom) g92mix
+      g92rwf = '000000' ! initialized to something
+      read (fileunit, iostat=ios, iomsg=iom) g92rwf
       if(ios /= 0) goto 999
-      if (g92mix /= 'G92RWF') then
-         print '(a," (",a6,")")', "ERROR: Invalid file header", g92mix
+      if (g92rwf /= 'G92RWF') then
+         print '(a," (",a6,")")', "ERROR: Invalid file header", g92rwf
          status = .false.
          return
       endif
@@ -316,6 +347,7 @@ contains
          if(ioerror) goto 999
       enddo
 
+      if(allocated(orbitals)) deallocate(orbitals)
       allocate(orbitals(norbitals))
       orbitals(:) = orbitals_tmp(1:norbitals)
       status = .true.
@@ -447,5 +479,180 @@ contains
        status = .false.
        return
    end function orbitals_write_unit
+
+   !> Reads an ASF coefficients (mixing) file into a data structure.
+   !!
+   !! @param filename Path to the file to be read from.
+   !! @param asfcoefs Output data structure containing the ASF coefficients.
+   !! @return Returns false if there were any I/O errors.
+   function asfs_read(filename, asfs) result(status)
+      integer, parameter :: dp = real64
+      ! Arguments and return type
+      character(len=*), intent(in) :: filename
+      type(asfs_t), intent(out) :: asfs
+      logical :: status
+      ! Local variables
+      integer :: fileunit, ios
+      character(255) :: iom
+
+      open (newunit=fileunit, file=filename, status='old', form='unformatted', iostat=ios, iomsg=iom)
+      if (ios /= 0) then
+         print *, "ERROR: Unable to open file:", ios, iom
+         status = .false.
+         return
+      endif
+      status = asfs_read(fileunit, asfs)
+      close(fileunit)
+   end function asfs_read
+
+   !> Reads an ASF coefficients (mixing) file into a data structure.
+   !!
+   !! @param fileunit File unit to be read from.
+   !! @param asfcoefs Output data structure containing the ASF coefficients.
+   !! @return Returns false if there were any I/O errors.
+   function asfs_read_unit(fileunit, asfs) result(status)
+      integer, parameter :: dp = real64
+      ! Arguments and return type
+      integer, intent(in) :: fileunit
+      type(asfs_t), intent(out), target :: asfs
+      logical :: status
+      ! Local variables
+      type(asfblock_t), pointer :: ab
+      character(6) :: g92mix
+      integer :: ios, i, j, k, NB, ncsfs_total
+      character(255) :: iom
+
+      ! Verify the file header
+      g92mix = '000000' ! initialized to something
+      read (fileunit, iostat=ios, iomsg=iom) g92mix
+      if(ios /= 0) goto 999
+      if (g92mix /= 'G92MIX') then
+         print '(a," (",a6,")")', "ERROR: Invalid file header", g92mix
+         status = .false.
+         return
+      endif
+
+      ! Simplified algorithm from getmixblock.f90
+      read (fileunit, iostat=ios, iomsg=iom) asfs%NELEC, asfs%NCFTOT, asfs%NW, asfs%NVECTOT, asfs%NVECSIZ, asfs%nblocks
+      if(ios /= 0) goto 999
+      ! Allocate memory for all the J-blocks
+      if(allocated(asfs%blocks)) deallocate(asfs%blocks)
+      allocate(asfs%blocks(asfs%nblocks))
+      ncsfs_total = 0
+      do k = 1, size(asfs%blocks)
+         ab => asfs%blocks(k)
+         ! > READ (25) NB, NCFBLK, NEVBLK, IATJP, IASPA
+         ! NB: block number
+         ! NCFBLK: number of CSFs in the block?
+         ! NEVBLK: number of eigenstates per block
+         ! IATJP: ??
+         ! IASPA: ??
+         read (fileunit, iostat=ios, iomsg=iom) NB, ab%ncsfs, ab%nstates, ab%IATJP, ab%IASPA
+         if(ios /= 0) goto 999
+         ! > IF (JB /= NB) STOP 'jb .NE. nb'
+         if(NB /= k) then
+            print '(a," (got ",i0,", expected ",i0,")")', "ERROR: Invalid NB in ASF file", NB, k
+            status = .false.
+            return
+         endif
+         ncsfs_total = ncsfs_total + ab%ncsfs
+         ! Allocate memory for the block
+         allocate(ab%IVEC(ab%nstates))
+         allocate(ab%EVAL(ab%nstates))
+         allocate(ab%cs(ab%ncsfs, ab%nstates))
+         ! Load the arrays for the block
+         if (ab%nstates > 0) then
+            ! > READ (25) (IVEC(NVECPAT + I),I=1,NEVBLK)
+            read (fileunit, iostat=ios, iomsg=iom) (ab%IVEC(i), i=1,ab%nstates)
+            if(ios /= 0) goto 999
+            ! > READ (25) EAV, (EVAL(NVECPAT+I),I=1,NEVBLK)
+            read (fileunit, iostat=ios, iomsg=iom) ab%EAV, (ab%EVAL(i), i=1,ab%nstates)
+            if(ios /= 0) goto 999
+            ! > READ (25) ((EVEC(NVECSIZPAT+NCFPAT+I+(J-1)*NCFTOT),I=1,NCFBLK),J=1,NEVBLK)
+            read (fileunit, iostat=ios, iomsg=iom) ((ab%cs(j,i), j=1,ab%ncsfs), i=1,ab%nstates)
+            if(ios /= 0) goto 999
+         endif
+      enddo
+
+      ! Sanity check
+      if(ncsfs_total /= asfs%NCFTOT) then
+         print *, "WARNING: ncsfs_total /= asfs%NCFTOT", ncsfs_total, asfs%NCFTOT
+      endif
+
+      status = .true.
+      return
+
+      ! Error handling for IO errors (reachable via goto)
+      999 continue
+      print *, "ERROR: error reading ASF file:", ios, iom
+      status = .false.
+      return
+   end function asfs_read_unit
+
+   !> Writes an `asfs_t` object into a file in the GRASP `.m` format.
+   !!
+   !! @param asfs An `asfs_t` object with the ASF coefficients in the block format.
+   !! @param filename Path to the file to be written into.
+   !! @return Returns false if there were any I/O errors.
+   function asfs_write(asfs, filename) result(status)
+       type(asfs_t), intent(in) :: asfs
+       character(len=*), intent(in) :: filename
+       logical :: status
+       ! Local variables
+       integer :: fileunit
+       integer :: ios
+       character(255) :: iom
+
+       open(newunit=fileunit, file=filename, status='new', form='unformatted', iostat=ios, iomsg=iom)
+       if (ios /= 0) then
+          print *, "ERROR: Unable to open file for writing:", ios, iom
+          status = .false.
+          return
+       endif
+       status = asfs_write(asfs, fileunit)
+       close(fileunit)
+   end function asfs_write
+
+   !> Writes an `asfs_t` object into a fileunit in the GRASP `.m` format.
+   !!
+   !! @param asfs An `asfs_t` object with the ASF coefficients in the block format.
+   !! @param fileunit File unit to be written into.
+   !! @return Returns false if there were any I/O errors.
+   function asfs_write_unit(asfs, fileunit) result(status)
+      type(asfs_t), intent(in), target :: asfs
+      integer, intent(in) :: fileunit
+      logical :: status
+      ! Local variables
+      type(asfblock_t), pointer :: b
+      integer :: ios, i, j, k, npts
+      character(255) :: iom
+
+      ! Write the file header
+      write(fileunit, iostat=ios, iomsg=iom) 'G92MIX'
+      if(ios /= 0) goto 999
+
+      write(fileunit, iostat=ios, iomsg=iom) asfs%NELEC, asfs%NCFTOT, asfs%NW, asfs%NVECTOT, asfs%NVECSIZ, asfs%nblocks
+      if(ios /= 0) goto 999
+      do k = 1, size(asfs%blocks)
+         b => asfs%blocks(k)
+         write(fileunit, iostat=ios, iomsg=iom) k, b%ncsfs, b%nstates, b%IATJP, b%IASPA
+         if(ios /= 0) goto 999
+         write(fileunit, iostat=ios, iomsg=iom) (b%IVEC(i), i=1,b%nstates)
+         if(ios /= 0) goto 999
+         write(fileunit, iostat=ios, iomsg=iom) b%EAV, (b%EVAL(i), i=1,b%nstates)
+         if(ios /= 0) goto 999
+         write(fileunit, iostat=ios, iomsg=iom) ((b%cs(j,i), j=1,b%ncsfs), i=1,b%nstates)
+         if(ios /= 0) goto 999
+      enddo
+
+      status = .true.
+      return
+
+      ! Error handling for IO errors (reachable via goto)
+      999 continue
+      print *, "ERROR: error writing to orbital file:", ios, iom
+      status = .false.
+      return
+   end function asfs_write_unit
 
 end module grasp_datafiles
