@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+checklibraries=false
+for arg in $@; do
+	if [ "$arg" = "--libraries" ]; then
+		checklibraries=true
+	fi
+done
+
 BINARIES="
 lscomp.pl
 rangular
@@ -55,7 +62,7 @@ for p in ${BINARIES}; do
 done
 
 LIB="${DIR}/../lib"
-for lib in ${LIBRARIES}; do
+[ $checklibraries = "true" ] && for lib in ${LIBRARIES}; do
 	if ! [ -f "${LIB}/$lib" ]; then
 		>&2 echo "ERROR: library ${lib} missing from lib/"
 		success=false
@@ -66,8 +73,8 @@ if [ "$success" = "false" ]; then
 	>&2 echo "FAIL: Verification failed, check the logs."
 	>&2 echo "INFO: ls -Alh bin/"
 	ls -Alh "${BIN}"
-	>&2 echo "INFO: ls -Alh lib/"
-	ls -Alh "${LIB}"
+	[ $checklibraries = "true" ] && >&2 echo "INFO: ls -Alh lib/"
+	[ $checklibraries = "true" ] && ls -Alh "${LIB}"
 	exit 1
 else
 	>&2 echo "SUCCESS: Found all the binaries in all the right places."
