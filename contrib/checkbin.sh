@@ -1,8 +1,75 @@
 #!/usr/bin/env bash
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+BINARIES="
+lscomp.pl
+rangular
+rasfsplit
+rbiotransform rbiotransform_mpi
+rci rci_mpi
+rcsfblock
+rcsfgenerate
+rcsfmr
+rcsfsplit
+rcsfzerofirst
+rhfs
+rhfs_lsj
+rlevels
+rlevelseV
+rmcdhf rmcdhf_mpi
+rmixaccumulate
+rmixextract
+rnucleus
+rsave
+rseqenergy
+rseqhfs
+rseqtrans
+rtabhfs rtablevels rtabtrans1 rtabtrans2 rtabtransE1
+rtransition rtransition_mpi
+rwfnestimate
+rwfnmchfmcdf
+rwfnplot
+rwfnrelabel
+rwfnrotate
+sms
+wfnplot
+"
+
+LIBRARIES="
+lib9290.a
+libdvd90.a
+libmcp90.a
+libmcp.a
+libmod.a
+libmpi90.a
+libmpiu90.a
+librang90.a
+"
+
+success=true
+
 BIN="${DIR}/../bin"
-LIB="${DIR}/../bin"
+for p in ${BINARIES}; do
+	if ! [ -f "${BIN}/$p" ]; then
+		>&2 echo "ERROR: binary ${p} missing from bin/"
+		success=false
+	fi
+done
 
-ls -Alh "${BIN}"
+LIB="${DIR}/../lib"
+for lib in ${LIBRARIES}; do
+	if ! [ -f "${LIB}/$lib" ]; then
+		>&2 echo "ERROR: library ${lib} missing from lib/"
+		success=false
+	fi
+done
 
-exit 1
+if [ "$success" = "false" ]; then
+	>&2 echo "Verification failed, check the logs."
+	>&2 echo "INFO: ls -Alh bin/"
+	ls -Alh "${BIN}"
+	>&2 echo "INFO: ls -Alh lib/"
+	ls -Alh "${LIB}"
+	exit 1
+fi
+exit 0
