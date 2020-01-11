@@ -39,9 +39,7 @@ LIBRARIES="
 lib9290.a
 libdvd90.a
 libmcp90.a
-libmcp.a
 libmod.a
-libmpi90.a
 libmpiu90.a
 librang90.a
 "
