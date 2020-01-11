@@ -63,11 +63,13 @@ for lib in ${LIBRARIES}; do
 done
 
 if [ "$success" = "false" ]; then
-	>&2 echo "Verification failed, check the logs."
+	>&2 echo "FAIL: Verification failed, check the logs."
 	>&2 echo "INFO: ls -Alh bin/"
 	ls -Alh "${BIN}"
 	>&2 echo "INFO: ls -Alh lib/"
 	ls -Alh "${LIB}"
 	exit 1
+else
+	>&2 echo "SUCCESS: Found all the binaries in all the right places."
+	exit 0
 fi
-exit 0
