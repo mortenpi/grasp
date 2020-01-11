@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: "Install dependencies"
-      run: sudo apt-get install -y build-essential gfortran liblapack-dev libblas-dev openmpi-bin openmpi-common
+      run: sudo apt-get install -y build-essential gfortran liblapack-dev libblas-dev openmpi-bin openmpi-common libopenmpi-dev
     - name: Build GRASP
       run: |
         source make_environment_gfortran
