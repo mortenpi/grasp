@@ -1,0 +1,7 @@
+*	@mortenpi @jongrumer
+
+# Build system related files
+Makefile	@mortenpi
+CMakeLists.txt	@mortenpi
+BUILDCONF.sh	@mortenpi
+contrib/*	@mortenpi
