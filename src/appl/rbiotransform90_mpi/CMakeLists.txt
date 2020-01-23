@@ -86,5 +86,5 @@ add_executable(rbiotransform_mpi
     wrtmat.f90
     wrtmat_I.f90
 )
-target_link_libraries_Fortran(rbiotransform_mpi PUBLIC mod 9290 rang90 mpi90)
+target_link_libraries_Fortran(rbiotransform_mpi PUBLIC mod 9290 rang90 mpiu90)
 install(TARGETS rbiotransform_mpi DESTINATION bin/)

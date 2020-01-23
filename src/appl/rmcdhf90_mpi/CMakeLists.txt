@@ -113,5 +113,5 @@ add_executable(rmcdhf_mpi
     ypot.f90
     ypot_I.f90
 )
-target_link_libraries_Fortran(rmcdhf_mpi PUBLIC mod 9290 dvd90 mpi90)
+target_link_libraries_Fortran(rmcdhf_mpi PUBLIC mod 9290 dvd90 mpiu90)
 install(TARGETS rmcdhf_mpi DESTINATION bin/)

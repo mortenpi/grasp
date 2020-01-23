@@ -27,5 +27,5 @@ add_executable(rangular_mpi
     strsum.f90
     strsum_I.f90
 )
-target_link_libraries_Fortran(rangular_mpi PUBLIC mod 9290 rang90 mcp90 mpi90)
+target_link_libraries_Fortran(rangular_mpi PUBLIC mod 9290 rang90 mcp90 mpiu90)
 install(TARGETS rangular_mpi DESTINATION bin/)

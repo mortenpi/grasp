@@ -81,5 +81,5 @@ add_executable(rtransition_mpi
     trsortmpi.f90
     trsortmpi_I.f90
 )
-target_link_libraries_Fortran(rtransition_mpi PUBLIC mod 9290 mcp90 rang90 dvd90 mpi90)
+target_link_libraries_Fortran(rtransition_mpi PUBLIC mod 9290 mcp90 rang90 dvd90 mpiu90)
 install(TARGETS rtransition_mpi DESTINATION bin/)
