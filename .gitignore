@@ -1,11 +1,19 @@
-# The default binary installation directories
-/bin/
-/lib/
+# Ignore artifacts from Make builds
+*.o
+*.mod
+/bin/*
+!/bin/.gitkeep
+/lib/*
+!/lib/.gitkeep
 
-# CMake out-of-tree build directories
+# Ignore user build configuration files
+CMakeLists.user
+Make.user
+
+# Ignore generated CMake files
 build/
 build-*/
-CMakeLists.user
 
-# Doxygen
-doc/html/
+# Ignore output log files
+*.out
+*.err

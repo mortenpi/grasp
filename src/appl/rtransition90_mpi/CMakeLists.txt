@@ -11,23 +11,28 @@ add_executable(rtransition_mpi
     angdatampi_I.f90
     bessj.f90
     bessj_I.f90
-    biosclmpi.f90
     brkt.f90
     brkt_I.f90
     connect.f90
     connect_I.f90
     cpmix.f90
     cpmix_I.f90
+    spme.f90
+    spme_I.f90
     csfm.f90
     csfm_I.f90
     engout1.f90
     engout1_I.f90
     fname.f90
     fname_I.f90
-    getosdmpi.f90
-    getosdmpi_I.f90
     getrmpmpi.f90
     getrmpmpi_I.f90
+    lodrwffmpi.f90
+    lodrwffmpi_I.f90
+    lodrwfimpi.f90
+    lodrwfimpi_I.f90
+    getosdmpi.f90
+    getosdmpi_I.f90
     iqr.f90
     iqr_I.f90
     isparr.f90
@@ -48,10 +53,8 @@ add_executable(rtransition_mpi
     ldlbl2_I.f90
     lodcslm.f90
     lodcslm_I.f90
-    lodrwffmpi.f90
-    lodrwffmpi_I.f90
-    lodrwfimpi.f90
-    lodrwfimpi_I.f90
+    trsortmpi.f90
+    trsortmpi_I.f90
     mctinmpi.f90
     mctinmpi_I.f90
     mctoutmpi_gg.f90
@@ -60,26 +63,21 @@ add_executable(rtransition_mpi
     merg12mpi_I.f90
     mrgcslmpi.f90
     mrgcslmpi_I.f90
-    osclmpi.f90
-    osclmpi_I.f90
-    printa.f90
-    printaLS.f90
-    printaLS_I.f90
-    printa_I.f90
     readmixmpi.f90
     readmixmpi_I.f90
-    #setcsl.f90
-    #setcsl_I.f90
+    printaLS.f90
+    printaLS_I.f90
+    printa.f90
+    printa_I.f90
+    osclmpi.f90
+    osclmpi_I.f90
     setcslm.f90
     setcslm_I.f90
-    spme.f90
-    spme_I.f90
     strsum.f90
     strsum_I.f90
     testmix.f90
     testmix_I.f90
-    trsortmpi.f90
-    trsortmpi_I.f90
+    biosclmpi.f90
 )
-target_link_libraries_Fortran(rtransition_mpi PUBLIC mod 9290 mcp90 rang90 dvd90 mpiu90)
+target_link_libraries_Fortran(rtransition_mpi PUBLIC mcp90 dvd90 rang90 mpiu90 9290 mod)
 install(TARGETS rtransition_mpi DESTINATION bin/)

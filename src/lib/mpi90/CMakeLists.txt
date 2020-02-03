@@ -1,4 +1,6 @@
 add_library(mpiu90 STATIC
+    mpi_C.f90
+    mpiu.f90
     cpath.f90
     cpath_I.f90
     cslhmpi.f90
@@ -9,8 +11,6 @@ add_library(mpiu90 STATIC
     lodcslmpi_I.f90
     lodrwfmpi.f90
     lodrwfmpi_I.f90
-    mpi_C.f90
-    mpiu.f90
     setisompi.f90
     setisompi_I.f90
     setrwfmpi.f90
@@ -32,3 +32,4 @@ set_target_properties(mpiu90 PROPERTIES
   COMPILE_FLAGS "${MPI_Fortran_COMPILE_FLAGS}"
   LINK_FLAGS "${MPI_Fortran_LINK_FLAGS}"
 )
+install(TARGETS mpiu90 DESTINATION lib/)

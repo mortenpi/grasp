@@ -1,4 +1,7 @@
 add_library(mod STATIC
+    parameter_def_M.f90
+    vast_kind_param_M.f90
+    memory_man.f90
     AME_C.f90
     bcore_C.f90
     bess_C.f90
@@ -59,7 +62,6 @@ add_library(mod STATIC
     mcpa_C.f90
     mcpb_C.f90
     mcpdata_C.f90
-    memory_man.f90
     mtjj2_C.f90
     mtjj_C.f90
     ncc_C.f90
@@ -74,7 +76,6 @@ add_library(mod STATIC
     orthct_C.f90
     osc_C.f90
     ovl_C.f90
-    parameter_def_M.f90
     peav_C.f90
     pos_C.f90
     pote_C.f90
@@ -96,7 +97,6 @@ add_library(mod STATIC
     terms_C.f90
     titl_C.f90
     trk_C.f90
-    vast_kind_param_M.f90
     vinlst_C.f90
     vpilst_C.f90
     wave_C.f90
@@ -105,3 +105,4 @@ add_library(mod STATIC
     whfrom_C.f90
 )
 setup_fortran_modules(mod)
+install(TARGETS mod DESTINATION lib/)

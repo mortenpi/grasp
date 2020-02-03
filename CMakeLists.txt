@@ -10,14 +10,7 @@
 # which will compile and install all the libraries to lib/
 #
 
-# This minimum CMake requirement can probably be loosened. But GRASP has not
-# been tested with CMake versions older than 3.6.3.
-#
-# This particular minimum version is necessary as it is the lowest one which
-# ships with a FindBLAS module that is able to detect OpenBLAS loaded with
-# Environment Modules.
-cmake_minimum_required(VERSION 3.6)
-
+cmake_minimum_required(VERSION 2.6)
 project(grasp)
 
 enable_language(Fortran)
@@ -77,6 +70,8 @@ find_package(LAPACK REQUIRED)
 set(Fortran_MODULE_DIRECTORY_root ${CMAKE_CURRENT_BINARY_DIR}/modules)
 function(setup_fortran_modules target)
     set_property(TARGET ${target} PROPERTY Fortran_MODULE_DIRECTORY "${Fortran_MODULE_DIRECTORY_root}/${target}")
+    install(DIRECTORY "${Fortran_MODULE_DIRECTORY_root}/${target}" DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/"
+        FILES_MATCHING PATTERN "*.mod")
 endfunction()
 function(target_link_libraries_Fortran target mode)
     target_link_libraries(${target} ${mode} ${ARGN})

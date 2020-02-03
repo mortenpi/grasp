@@ -1,65 +1,136 @@
 # General Relativistic Atomic Structure Package
 
-[![Doxygen Documentation](https://img.shields.io/badge/documentation-master-blue.svg)](http://mortenpi.eu/grasp/)
-[![Travis Status](https://travis-ci.com/mortenpi/grasp.svg?token=J2TJDmxGV6c9f8C3LXps&branch=master)](https://travis-ci.com/mortenpi/grasp)
+[![][manual-badge]][manual-pdf]
 
-## Quickstart
+The General Relativistic Atomic Structure Package (GRASP) is a set of Fortran 90
+programs for performing fully-relativistic electron structure calculations of
+atoms.
 
-**Prerequisites.**
-You need to have CMake, a Fortran compiler and the BLAS and LAPACK libraries installed. To compile the MPI programs you also need to have the MPI libraries installed. CMake should generally find the libraries automatically -- if not, please open an issue.
+## Installation
 
-**Compilation.**
-To start the build, you first need to set up the CMake build directory. You can use the `configure.sh` helper script to do that quickly by calling
+> **Please note:**
+> The installation instructions here are for the _development version_ on the
+> `master` branch.
+>
+> To install the _latest published release_ (2018-12-03), go to the
+> ["Releases" page](https://github.com/compas/grasp/releases/tag/2018-12-03),
+> download the tarball from there and refer to the instructions in the README in
+> the tarball.
 
-```bash
-./configure.sh
+To compile and install GRASP, first clone this Git repository:
+
+```sh
+git clone https://github.com/compas/grasp.git
 ```
 
-This will create a directory called `build/` which is where the compilation occurs. To compile GRASP, call
+There are two ways to build GRASP: either via [CMake](https://cmake.org/) or via the
+`Makefile`s in the source tree. Either works and you end up with the GRASP binaries in the
+`bin/` directory.
 
-```bash
-cd build/
+CMake is the recommended way to build GRASP. The `Makefile`-based workflow is still there to
+make smoother to transition from `Makefile`s to a modern build system.
+
+### CMake-based build
+
+The first step with CMake is to create a separate out-of-source build directory. The
+`configure.sh` script can do that for you:
+
+```sh
+cd grasp/ && ./configure.sh
+```
+
+This will create a `build/` directory with the default _Release_ build
+configuration. However, `configure.sh` is just a simple wrapper around a `cmake`
+call and if you need more control over the build, you can always invoke `cmake`
+yourself (see [CMake documentation](https://cmake.org/documentation/) for more
+information).
+
+To then compile GRASP, you need to go into the out-of-source build directory and
+simply call `make`:
+
+```sh
+cd build/ && make install
+```
+
+Remarks:
+
+* Running `make install` instructs CMake to actually _install_ the resulting binaries into
+  the conventional `bin/` directory at the root of the repository.
+
+  When you run just `make`, the resulting binaries will end up under the `build/` directory
+  (specifically in `build/bin/`). This is useful when developing and debugging, as it allows
+  you to compile many versions of the binaries from the same source tree with different
+  compilation options (e.g. build with debug symbols enabled) by using several out of source
+  build directories.
+
+* With CMake, GRASP also supports parallel builds, which can be enabled by passing the `-j`
+  option to `make` (e.g. `make -j4 install` to build with four processes).
+
+* The CMake-based build allows running the (non-comprehensive) test suite by calling `ctest`
+  in the `build/` directory. The configuration and source files for the tests are under
+  `test/`/
+
+### `Makefile`-based build
+
+The legacy `Makefile`-based build can be performed by simply calling the `make` in the top
+level directory:
+
+```sh
 make
 ```
 
-You can also run the build in parallel on multiple cores with `make -jN`, where `N` is the number of cores you would like to use.
+In this case, the compilation of each of the libraries and programs happens in their
+respective directory under `src/` and the build artifacts are stored in the source tree.
+The resulting binaries and libraries will directly get installed under the `bin/` and `lib/`
+directories.
 
-Finally, to place the GRASP binaries in the `bin/` directory, you can to install them with
+To build a specific library or binary you can pass the path to the source directory as the
+Make target:
 
-```bash
-make install
+```sh
+# build libmod
+make src/lib/libmod
+# build the rci_mpi binary
+make src/appl/rci90_mpi
 ```
 
-**Running GRASP.**
-An easy way to run the different GRASP programs is to source the `envset.sh` script
+Note that any necessary library dependencies will also get built automatically.
 
-```bash
-source envset.sh
+**WARNING:** the `Makefile`s do not know about the dependencies between the source files, so
+parallel builds (i.e. calling `make` with the `-j` option) does not work.
+
+#### Customizing the build
+
+By default the `Makefile` is designed to use `gfortran`. The variables affecting GRASP
+builds are defined and documented at the beginning of the `Makefile`.
+
+For the user it should never be necessary to modify the `Makefile` itself. Rather, a
+`Make.user` file can be create next to the main `Makefile` where the build variables can be
+overridden. E.g. to use the Intel Fortran compiler instead, you may want to create the
+following `Make.user` file:
+
+```make
+export FC = ifort
+export FC_FLAGS = -O2 -save
+export FC_LD = -mkl=sequential
+export FC_MPI = mpiifort
 ```
 
-This will set up, in you current shell session:
+As another example, to set up a linker search path for the BLAS or LAPACK libraries, you can
+set up `Make.user` as follows:
 
-1. The `$GRASP` environment variable that points to the root directory.
-2. The `grasp` shell command with tab-completion for command names. You can then call a particular GRASP program with e.g. `grasp rmcdhf`.
-
-**Debug builds.**
-If you need binaries with debug symbols, you can easily set up a separate debug build.
-
-```bash
-./configure.sh --debug
+```make
+export FC_LD = -L /path/to/blas
 ```
 
-You can also install the debug binaries to `$GRASP/bin`, but that is not recommended. Instead, you should call them with `$GRASP/build-debug/bin/<program name>`.
+## About GRASP
 
- 
-## Overview
-
-This version of GRASP is a major revision of the previous GRASP2K package by
-P. Jonsson, G. Gaigalas, J. Bieron, C. Froese Fischer, and I.P. Grant Computer
-Physics Communication, 184, 2197 - 2203 (2013) written in FORTRAN 77 style with
-COMMON and using Cray pointers for memory management.  The present version is a
-FORTRAN95 translation using standard FORTRAN for memory management.  In
-addition, COMMONS have been replaced with MODULES, with some COMMONS merged.
+This version of GRASP is a major revision of the previous GRASP2K package by [P.
+Jonsson, G. Gaigalas, J. Bieron, C. Froese Fischer, and I.P. Grant Computer
+Physics Communication, 184, 2197 - 2203 (2013)][grasp2k-2013] written in FORTRAN
+77 style with COMMON and using Cray pointers for memory management.  The present
+version is a FORTRAN95 translation using standard FORTRAN for memory management.
+In addition, COMMONS have been replaced with MODULES, with some COMMONS merged.
 Some algorithms have been changed to improve performance for large cases and
 efficiently.
 
