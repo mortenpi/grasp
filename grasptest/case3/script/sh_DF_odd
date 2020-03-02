@@ -3,7 +3,7 @@ do
    (if test $z -lt 27
     then
 cd Z${z}
-cp ../DFodd.c rcsf.inp
+cp ../DFodd.c rcsf.inp 
 #  Get angular data
 rangular <<S4
 y
@@ -37,7 +37,7 @@ cd ..
     else
 
 cd Z${z}
-cp ../DFodd.c rcsf.inp
+cp ../DFodd.c rcsf.inp 
 #Move mcp files from previous directory
 m=`expr $z - 1`
 mv ../Z${m}/mcp* .

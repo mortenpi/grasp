@@ -9,3 +9,4 @@ cp even5.ch ../hfs${z}
 cd ..
 echo)
 done
+

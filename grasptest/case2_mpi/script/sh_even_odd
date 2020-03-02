@@ -1,7 +1,7 @@
 for z in 6 7 8 9 10 11 12
 do
 (cd Z${z}
-# RCI calculations for even5
+# RCI calculations for even5 
 mpirun -np 8 rci_mpi > outeven_rci <<S6
 y
 even5
@@ -16,7 +16,7 @@ y
 1
 S6
 
-# RCI calculations for odd5
+# RCI calculations for odd5 
 mpirun -np 8 rci_mpi > outodd_rci <<S6
 y
 odd5

@@ -1,5 +1,5 @@
 # 1: Dirac-Fock
-rnucleus < rnucleus_input
+rnucleus < rnucleus_input 
 rcsfgenerate < rcsfgenerate_input1
 cp rcsfgenerate.log 2s_2p_DF.exc
 cp rcsf.out rcsf.inp
@@ -35,7 +35,7 @@ rhfs < rhfs_input2P
 rbiotransform < rbiotransform_input
 rtransition < rtransition_input
 # 6: PRODUCE ENERGY TABLE
-rlevels 2s_3.cm 2p_3.cm > energy3
+rlevels 2s_3.cm 2p_3.cm > energy3 
 rtablevels < rtablevels_input
 pdflatex energytablelatex.tex
 # 7: PRODUCE TRANSITION TABLES
@@ -43,3 +43,4 @@ rtabtrans1 < rtabtrans1_inp
 rtabtrans2 < rtabtrans2_inp
 pdflatex transitiontable.tex
 pdflatex lifetimetable.tex
+

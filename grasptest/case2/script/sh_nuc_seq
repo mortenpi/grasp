@@ -156,13 +156,13 @@ case $z in
  138) m=366; MM=366;;
 esac
 
-echo "Starting: Z::"${z}, "ZZ::"$ZZ, "mass::"${m}, "Weight::"${MM}
+echo "Starting: Z::"${z}, "ZZ::"$ZZ, "mass::"${m}, "Weight::"${MM} 
 
 rm -r Z$z
 mkdir Z$z
 cd Z$z
 
-rnucleus <<EOF
+rnucleus <<EOF 
 $z
 $m
 n
@@ -176,3 +176,5 @@ EOF
 cd ..
 
 done
+
+
