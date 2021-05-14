@@ -136,9 +136,16 @@ In addition, COMMONS have been replaced with MODULES, with some COMMONS merged.
 Some algorithms have been changed to improve performance for large cases and
 efficiently.
 
-The previous package, was an extension and modification of GRASP92 by Farid
+The previous package, was an extension and modification of GRASP92 by [Farid
 Parpia, Charlotte Froese Fischer, and Ian Grant. Computer Physics Communication,
-94, 249-271 (1996)
+94, 249-271 (1996)][grasp92-1996].
+
+This version of GRASP has been published in:
+
+> C. Froese Fischer, G. Gaigalas, P. Jönsson, J. Bieroń,
+> "GRASP2018 — a Fortran 95 version of the General Relativistic Atomic Structure Package",
+> Computer Physics Communications, 237, 184-187 (2018),
+> https://doi.org/10.1016/j.cpc.2018.10.032
 
 Development of this package was performed largely by:
 |                           | email                         |
@@ -234,10 +241,10 @@ in the `appl` directory, libraries in the `lib` directory and tools in the
 
 ## Program Guide and Compilation
 
-The software is distributed with a practical guide to GRASP2018 in PDF-format.
-The guide, which is under Creative Commons Attribution 4.0 International (CC BY
-4.0) license, contains full information on how to compile and install the
-package.
+The software is distributed with a practical guide to [GRASP2018 in PDF-format
+(click here to download)][manual-pdf]. The guide, which is under Creative
+Commons Attribution 4.0 International (CC BY 4.0) license, contains full
+information on how to compile and install the package.
 
 
 ## Acknowledgements
@@ -252,11 +259,11 @@ Development Fund in the framework of the Polish Innovation Economy Operational
 Program (Contract No. POIG.02.01.00-12-023/08).
 
 
-## License
+## Copyright & license
 
-The code in this repository is distributed under the [MIT license](LICENSE.md).
-The associated manual "A practical guide to GRASP2018" is distributed under
-[the Creative Commons Attribution 4.0 International (CC BY 4.0) license](https://creativecommons.org/licenses/by/4.0/legalcode).
+The code in this repository is distributed under the [MIT license](LICENSE).
+The accompanying guide  "A practical guide to GRASP2018" is licensed separately
+under [the CC-BY-4.0 (Creative Commons Attribution 4.0 International) license][cc-by].
 
 [manual-pdf]: https://github.com/compas/grasp2018/releases/download/2018-12-03/GRASP2018-manual.pdf
 [manual-badge]: https://img.shields.io/badge/manual-pdf-blue.svg
