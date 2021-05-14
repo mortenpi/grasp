@@ -141,26 +141,27 @@ Parpia, Charlotte Froese Fischer, and Ian Grant. Computer Physics Communication,
 94, 249-271 (1996)
 
 Development of this package was performed largely by:
-
-* Charlotte Froese Fischer  email: cff@cs.ubc.ca
-* Gediminas Gaigalas        email: Gediminas.Gaigalas@tfai.vu.lt
-* Per Jönsson               email: per.jonsson@mau.se
-* Jacek Bieron              email: jacek.bieron@uj.edu.pl
-
-Please contact one of these authors if you have questions
+|                           | email                         |
+| ------------------------- | ------------------------------|
+| Charlotte Froese Fischer  | cff@cs.ubc.ca                 |
+| Gediminas Gaigalas        | Gediminas.Gaigalas@tfai.vu.lt |
+| Per Jönsson               | per.jonsson@mau.se            |
+| Jacek Bieron              | jacek.bieron@uj.edu.pl        |
 
 Supporters include:
+|                           | email                         |
+| ------------------------- | ------------------------------|
+| Jörgen Ekman              | jorgen.ekman@mah.se           |
+| Ian Grant                 | ian.grant@maths.ox.ac.uk      |
 
-* Jörgen Ekman              email: jorgen.ekman@mah.se
-* Ian Grant                 email: iangrant15@btinternet.com
+The GitHub repository is maintained by:
+|                           | email                         |
+| ------------------------- | ------------------------------|
+| Jon Grumer                | jon.grumer@physics.uu.se
 
-Computer Physics Communications publication on this version of GRASP:
-
-> C. Froese Fischer, G. Gaigalas, P. Jönsson, J. Bieroń,
-> "GRASP2018 - a Fortran 95 version of the General Relativistic Atomic Structure Package",
-> Computer Physics Communications, 2018,
-> https://doi.org/10.1016/j.cpc.2018.10.032
-
+Please contact the repository manager should you have any questions with regards
+to bugs or the general development procedure. Contact the leading developer for
+specific questions related to a certain code.
 
 ## Structure of the Package
 
