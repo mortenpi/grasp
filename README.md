@@ -167,7 +167,7 @@ The GitHub repository is maintained by:
 | Jon Grumer                | jon.grumer@physics.uu.se
 
 Please contact the repository manager should you have any questions with regards
-to bugs or the general development procedure. Contact the leading developer for
+to bugs or the general development procedure. Contact the leading developer for 
 specific questions related to a certain code.
 
 ## Structure of the Package
